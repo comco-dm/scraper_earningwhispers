@@ -27,6 +27,9 @@ steps:
       '--port', '8080'
     ]
 
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 images:
   - 'gcr.io/$PROJECT_ID/earnings-scraper-api:$COMMIT_SHA'
   - 'gcr.io/$PROJECT_ID/earnings-scraper-api:latest' 
