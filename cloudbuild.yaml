@@ -23,7 +23,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/earnings-scraper-api:latest']
 
-  # Deploy container image to Cloud Run
+  # Deploy container image to Cloud Run with proxy secret configuration
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args: [
@@ -32,7 +32,8 @@ steps:
       '--region', 'us-central1',
       '--platform', 'managed',
       '--allow-unauthenticated',
-      '--port', '8080'
+      '--port', '8080',
+      '--set-env-vars', 'PROXY_SECRET_NAME=proxy-credentials'
     ]
 
 options:

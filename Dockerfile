@@ -11,7 +11,7 @@ COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code (changes more frequently)
-COPY context.py scraper.py multiscraper.py /app/
+COPY context.py scraper.py multiscraper.py proxy_config.py /app/
 COPY app/ /app/app/
 
 EXPOSE 8080
