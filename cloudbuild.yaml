@@ -1,8 +1,16 @@
 steps:
-  # Build the container image
+  # Pull previous image for layer caching
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - 'docker pull gcr.io/$PROJECT_ID/earnings-scraper-api:latest || exit 0'
+
+  # Build the container image with cache
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'build', 
+      '--cache-from', 'gcr.io/$PROJECT_ID/earnings-scraper-api:latest',
       '-t', 'gcr.io/$PROJECT_ID/earnings-scraper-api:$COMMIT_SHA',
       '-t', 'gcr.io/$PROJECT_ID/earnings-scraper-api:latest',
       '.'
@@ -29,6 +37,7 @@ steps:
 
 options:
   logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'  # Faster build machine
 
 images:
   - 'gcr.io/$PROJECT_ID/earnings-scraper-api:$COMMIT_SHA'
