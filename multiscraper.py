@@ -9,9 +9,6 @@ from typing import Dict, List
 from scraper import fetch_earnings
 
 
-_EXECUTOR = ThreadPoolExecutor(max_workers=10)
-
-
 def _fetch_single(date_str: str) -> Dict:
     """Synchronous helper to call the async fetcher inside a new event loop.
 
@@ -31,10 +28,12 @@ def fetch_earnings_range(days: int = 30) -> List[Dict]:
     start = datetime.now(tz).date()
     date_strs = [(start + timedelta(days=i)).strftime("%Y%m%d") for i in range(days)]
 
-    # Map across threads; each slot runs its own event loop.
-    results: List[Dict] = []
-    with _EXECUTOR as executor:
-        for date_str, data in zip(date_strs, executor.map(_fetch_single, date_strs)):
-            results.append({"date": date_str, "data": data})
+    # Create a new executor for each call to avoid shutdown issues
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = [executor.submit(_fetch_single, date_str) for date_str in date_strs]
+        results = []
+        for i, future in enumerate(futures):
+            data = future.result()
+            results.append({"date": date_strs[i], "data": data})
 
     return results 

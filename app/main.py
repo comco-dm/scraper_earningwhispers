@@ -4,7 +4,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import asyncio
 
-from fastapi import FastAPI, Path
+from fastapi import FastAPI, Path, Query
 
 from scraper import fetch_earnings
 from multiscraper import fetch_earnings_range
@@ -33,7 +33,14 @@ async def scrape(
 
 
 @app.get("/scrape_next")
-async def scrape_next(days: int = 30):
+async def scrape_next(
+    days: int = Query(
+        default=30,
+        description="Number of days to fetch (including today)",
+        ge=1,
+        le=365
+    )
+):
     """Return earnings data for today and the next ``days-1`` days (default 30).
     Computation runs in a thread pool to parallelise network I/O.
     """
