@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Path
 
 from scraper import fetch_earnings
 
@@ -19,6 +19,12 @@ async def root():
 
 
 @app.get("/scrape/{date}")
-async def scrape(date: str):
+async def scrape(
+    date: str = Path(
+        ...,
+        description="Date in YYYYMMDD format",
+        example=datetime.now(ZoneInfo("America/New_York")).strftime("%Y%m%d")
+    )
+):
     """Return earnings-calendar JSON for the given ``YYYYMMDD`` date."""
     return await fetch_earnings(date) 
